@@ -136,6 +136,7 @@
       border: 1px solid #ccc;
       border-radius: 5px;
       transition: border-color 0.3s, box-shadow 0.3s;
+      text-transform: uppercase;
     }
     .modal-content form input:focus {
       border-color: #007bff;
@@ -151,6 +152,19 @@
       transition: background-color 0.3s, transform 0.3s;
     }
     .modal-content form button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .modal-content button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .modal-content button:hover {
       background-color: #0056b3;
       transform: scale(1.05);
     }
@@ -246,16 +260,16 @@
     <span class="close" onclick="fecharModalAdicionar()">&times;</span>
     <h2>Adicionar Produto</h2>
     <form>
-      <label>Cod Barra: <input type="number" id="inputCodBarra"></label>
+      <label>Cod Barra: <input type="text" id="inputCodBarra"></label>
       <label>Cod Fabricante: <input type="text" id="inputCodFabric"></label>
       <label>Cod Auxiliar: <input type="text" id="inputCodAuxiliar"></label>
       <label>Descrição: <input type="text" id="inputDescricao"></label>
       <label>Unidade: <input type="text" id="inputUnidade"></label>
-      <label>Disponível: <input type="number" id="inputDisponivel"></label>
+      <label>Disponível: <input type="text" id="inputDisponivel"></label>
       <label>Preço: <input type="text" id="inputPreco"></label>
-      <label>Grupo: <input type="text" id="inputGrupo"></label>
-      <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
-      <label>Categoria: <input type="text" id="inputCategoria"></label>
+      <label>Grupo: <input type="text" id="inputGrupoAdicionar"></label>
+      <label>Subgrupo: <input type="text" id="inputSubgrupoAdicionar"></label>
+      <label>Categoria: <input type="text" id="inputCategoriaAdicionar"></label>
       <button type="button" onclick="adicionarProduto()">Adicionar</button>
     </form>
   </div>
@@ -323,11 +337,18 @@
         <td>${produto.subgrupo}</td>
         <td>${produto.categoria}</td>
       `;
-      linha.onclick = () => selecionarProduto(produto);
+      linha.onclick = () => selecionarProduto(produto, linha);
       tabela.appendChild(linha);
     });
 
     document.getElementById('paginaAtual').textContent = pagina;
+  }
+
+  function selecionarProduto(produto, linha) {
+    produtoSelecionado = produto;
+    document.getElementById('inputDisponivel').value = produto.disponivel;
+    document.querySelectorAll('.table-container tr').forEach(linha => linha.classList.remove('selected'));
+    linha.classList.add('selected');
   }
 
   function paginaAnterior() {
@@ -342,14 +363,6 @@
       pagina++;
       renderizarTabela();
     }
-  }
-
-  function selecionarProduto(produto) {
-    produtoSelecionado = produto;
-    document.getElementById('inputDisponivel').value = produto.disponivel;
-    document.querySelectorAll('.table-container tr').forEach(linha => linha.classList.remove('selected'));
-    const linhaSelecionada = Array.from(document.querySelectorAll('.table-container tr')).find(linha => linha.cells[0].textContent == produto.codBarra);
-    if (linhaSelecionada) linhaSelecionada.classList.add('selected');
   }
 
   function fecharModal() {
@@ -519,9 +532,9 @@
     const un = document.getElementById('inputUnidade').value;
     const disponivel = parseInt(document.getElementById('inputDisponivel').value, 10);
     const preco = document.getElementById('inputPreco').value;
-    const grupo = document.getElementById('inputGrupo').value;
-    const subgrupo = document.getElementById('inputSubgrupo').value;
-    const categoria = document.getElementById('inputCategoria').value;
+    const grupo = document.getElementById('inputGrupoAdicionar').value;
+    const subgrupo = document.getElementById('inputSubgrupoAdicionar').value;
+    const categoria = document.getElementById('inputCategoriaAdicionar').value;
 
     const novoProduto = { codBarra, codFabric, codAuxiliar, descricao, un, disponivel, preco, grupo, subgrupo, categoria };
     produtos.push(novoProduto);
