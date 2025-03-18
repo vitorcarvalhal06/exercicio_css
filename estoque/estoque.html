@@ -168,10 +168,134 @@
       background-color: #0056b3;
       transform: scale(1.05);
     }
+    .dark-mode {
+      background-color: #121212;
+      color: #ffffff;
+    }
+    .dark-mode .toolbar, .dark-mode .filters, .dark-mode .table-container, .dark-mode .details {
+      background: #1e1e1e;
+      box-shadow: 0 0 5px rgba(255, 255, 255, 0.1);
+    }
+    .dark-mode table, .dark-mode th, .dark-mode td {
+      border-color: #444;
+      color: #ffffff;
+    }
+    .dark-mode .selected {
+      background-color: #0056b3;
+    }
+    .dark-mode .modal-content {
+      background-color: #2e2e2e;
+      border-color: #555;
+      color: #ffffff;
+    }
+    .dark-mode .modal-content label {
+      color: #ffffff;
+    }
+    .dark-mode .filters label {
+      color: #ffffff;
+    }
+    .dark-mode .close {
+      color: #ccc;
+    }
+    .dark-mode .close:hover,
+    .dark-mode .close:focus {
+      color: #fff;
+    }
+    .dark-mode button {
+      background-color: #444;
+      color: #fff;
+    }
+    .dark-mode button:hover {
+      background-color: #666;
+    }
+    .dark-mode input, .dark-mode select {
+      background-color: #333;
+      color: #fff;
+      border-color: #555;
+    }
+    .dark-mode input:focus, .dark-mode select:focus {
+      border-color: #888;
+      box-shadow: 0 0 5px rgba(136, 136, 136, 0.5);
+    }
+    .dark-mode .pagination button {
+      background-color: #444;
+      color: #fff;
+    }
+    .dark-mode .pagination button:hover {
+      background-color: #666;
+    }
+    .dark-mode-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 24px;
+      color: #333;
+      transition: color 0.3s;
+    }
+    .dark-mode-toggle:hover {
+      color: #000;
+    }
+    .pagination button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.3s;
+      margin: 0 5px;
+    }
+    .pagination button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+    .history-modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+      padding-top: 60px;
+    }
+    .history-modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+    .history-modal-content table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .history-modal-content th, .history-modal-content td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    .history-modal-content .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .history-modal-content .close:hover,
+    .history-modal-content .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-
+  <button class="dark-mode-toggle" onclick="toggleDarkMode()">🌙</button>
 <div class="toolbar">
   <button onclick="limparBusca()">Limpar Filtros</button>
   <button onclick="exportarExcel()">Exportar para Excel</button>
@@ -179,6 +303,7 @@
   <button onclick="alterarProduto()">Alterar</button>
   <button onclick="abrirModalAdicionar()">Adicionar Produto</button>
   <button onclick="abrirModalExcluir()">Excluir Produto</button>
+  <button onclick="abrirModalHistorico()">Histórico de Alterações</button>
 </div>
 
 <div class="filters">
@@ -264,7 +389,18 @@
       <label>Cod Fabricante: <input type="text" id="inputCodFabric"></label>
       <label>Cod Auxiliar: <input type="text" id="inputCodAuxiliar"></label>
       <label>Descrição: <input type="text" id="inputDescricao"></label>
-      <label>Unidade: <input type="text" id="inputUnidadeAdicionar"></label>
+      <label>Unidade:
+        <select id="inputUnidadeAdicionar">
+          <option value="UN">UN</option>
+          <option value="KG">KG</option>
+          <option value="GR">GR</option>
+          <option value="FT">FT</option>
+          <option value="CM">CM</option>
+          <option value="M">M</option>
+          <option value="LT">LT</option>
+          <option value="M2">M2</option>
+        </select>
+      </label>
       <label>Disponível: <input type="text" id="inputDisponivelAdicionar"></label>
       <label>Preço: <input type="text" id="inputPreco"></label>
       <label>Grupo: <input type="text" id="inputGrupoAdicionar"></label>
@@ -285,12 +421,45 @@
   </div>
 </div>
 
+<div id="modalHistorico" class="history-modal">
+  <div class="history-modal-content">
+    <span class="close" onclick="fecharModalHistorico()">&times;</span>
+    <h2>Histórico de Alterações</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Usuário</th>
+          <th>Alteração</th>
+          <th>Data</th>
+          <th>Hora</th>
+        </tr>
+      </thead>
+      <tbody id="tabela-historico">
+        <!-- Histórico de alterações aparece aqui -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
 <script>
   const produtos = [];
-  let produtoSelecionado = null;
+  let produtosSelecionados = [];
   let produtosFiltrados = [...produtos];
   let pagina = 1;
   const itensPorPagina = 10;
+  const historicoAlteracoes = [];
+
+  document.addEventListener('keydown', function(event) {
+    if (event.ctrlKey && event.key === 'a') {
+      event.preventDefault();
+      selecionarTodosProdutos();
+    }
+  });
+
+  function selecionarTodosProdutos() {
+    produtosSelecionados = [...produtosFiltrados];
+    document.querySelectorAll('.table-container tr').forEach(linha => linha.classList.add('selected'));
+  }
 
   function pesquisar() {
     const valorBusca = document.getElementById('inputBusca').value.trim().toUpperCase();
@@ -337,18 +506,27 @@
         <td>${produto.subgrupo}</td>
         <td>${produto.categoria}</td>
       `;
-      linha.onclick = () => selecionarProduto(produto, linha);
+      linha.onclick = (event) => selecionarProduto(produto, linha, event);
       tabela.appendChild(linha);
     });
 
     document.getElementById('paginaAtual').textContent = pagina;
   }
 
-  function selecionarProduto(produto, linha) {
-    produtoSelecionado = produto;
-    document.getElementById('inputDisponivel').value = produto.disponivel;
-    document.querySelectorAll('.table-container tr').forEach(linha => linha.classList.remove('selected'));
-    linha.classList.add('selected');
+  function selecionarProduto(produto, linha, event) {
+    if (event.ctrlKey) {
+      if (produtosSelecionados.includes(produto)) {
+        produtosSelecionados = produtosSelecionados.filter(p => p !== produto);
+        linha.classList.remove('selected');
+      } else {
+        produtosSelecionados.push(produto);
+        linha.classList.add('selected');
+      }
+    } else {
+      produtosSelecionados = [produto];
+      document.querySelectorAll('.table-container tr').forEach(linha => linha.classList.remove('selected'));
+      linha.classList.add('selected');
+    }
   }
 
   function paginaAnterior() {
@@ -370,9 +548,18 @@
   }
 
   function aplicarAlteracao() {
-    if (produtoSelecionado) {
+    if (produtosSelecionados.length > 0) {
       const novoValor = parseInt(document.getElementById('inputDisponivel').value, 10);
-      produtoSelecionado.disponivel = isNaN(novoValor) ? 0 : novoValor;
+      produtosSelecionados.forEach(produto => {
+        const alteracao = {
+          usuario: 'Usuário Atual', // Substitua pelo nome do usuário atual
+          alteracao: `Alterou disponível de ${produto.disponivel} para ${isNaN(novoValor) ? 0 : novoValor}`,
+          data: new Date().toLocaleDateString(),
+          hora: new Date().toLocaleTimeString()
+        };
+        historicoAlteracoes.push(alteracao);
+        produto.disponivel = isNaN(novoValor) ? 0 : novoValor;
+      });
       pesquisar();
       alert('Alteração aplicada com sucesso!');
     }
@@ -475,27 +662,37 @@
   });
 
   function confirmarExclusao() {
-    if (produtoSelecionado) {
-      const index = produtos.indexOf(produtoSelecionado);
-      if (index > -1) {
-        produtos.splice(index, 1);
-        produtosFiltrados = [...produtos];
-        produtoSelecionado = null;
-        renderizarTabela();
-        alert('Produto excluído com sucesso!');
-      }
+    if (produtosSelecionados.length > 0) {
+      produtosSelecionados.forEach(produto => {
+        const alteracao = {
+          usuario: 'Usuário Atual', // Substitua pelo nome do usuário atual
+          alteracao: `Excluiu produto ${produto.descricao}`,
+          data: new Date().toLocaleDateString(),
+          hora: new Date().toLocaleTimeString()
+        };
+        historicoAlteracoes.push(alteracao);
+        const index = produtos.indexOf(produto);
+        if (index > -1) {
+          produtos.splice(index, 1);
+        }
+      });
+      produtosFiltrados = [...produtos];
+      produtosSelecionados = [];
+      renderizarTabela();
+      alert('Produtos excluídos com sucesso!');
       fecharModalExcluir();
     }
   }
 
   function alterarProduto() {
-    if (produtoSelecionado) {
-      document.getElementById('inputNome').value = produtoSelecionado.descricao;
-      document.getElementById('inputQuantidade').value = produtoSelecionado.disponivel;
-      document.getElementById('inputGrupo').value = produtoSelecionado.grupo;
-      document.getElementById('inputSubgrupo').value = produtoSelecionado.subgrupo;
-      document.getElementById('inputCategoria').value = produtoSelecionado.categoria;
-      document.getElementById('inputUnidade').value = produtoSelecionado.un;
+    if (produtosSelecionados.length > 0) {
+      const produto = produtosSelecionados[0];
+      document.getElementById('inputNome').value = produto.descricao;
+      document.getElementById('inputQuantidade').value = produto.disponivel;
+      document.getElementById('inputGrupo').value = produto.grupo;
+      document.getElementById('inputSubgrupo').value = produto.subgrupo;
+      document.getElementById('inputCategoria').value = produto.categoria;
+      document.getElementById('inputUnidade').value = produto.un;
       document.getElementById('modalDetalhes').style.display = 'block';
     } else {
       alert('Selecione um produto para alterar.');
@@ -503,13 +700,21 @@
   }
 
   function salvarAlteracoes() {
-    if (produtoSelecionado) {
-      produtoSelecionado.descricao = document.getElementById('inputNome').value;
-      produtoSelecionado.disponivel = parseInt(document.getElementById('inputQuantidade').value, 10);
-      produtoSelecionado.grupo = document.getElementById('inputGrupo').value;
-      produtoSelecionado.subgrupo = document.getElementById('inputSubgrupo').value;
-      produtoSelecionado.categoria = document.getElementById('inputCategoria').value;
-      produtoSelecionado.un = document.getElementById('inputUnidade').value;
+    if (produtosSelecionados.length > 0) {
+      const produto = produtosSelecionados[0];
+      const alteracao = {
+        usuario: 'Usuário Atual', // Substitua pelo nome do usuário atual
+        alteracao: `Alterou produto ${produto.descricao}`,
+        data: new Date().toLocaleDateString(),
+        hora: new Date().toLocaleTimeString()
+      };
+      historicoAlteracoes.push(alteracao);
+      produto.descricao = document.getElementById('inputNome').value;
+      produto.disponivel = parseInt(document.getElementById('inputQuantidade').value, 10);
+      produto.grupo = document.getElementById('inputGrupo').value;
+      produto.subgrupo = document.getElementById('inputSubgrupo').value;
+      produto.categoria = document.getElementById('inputCategoria').value;
+      produto.un = document.getElementById('inputUnidade').value;
       fecharModal();
       renderizarTabela();
       alert('Alterações salvas com sucesso!');
@@ -551,22 +756,31 @@
   }
 
   function excluirProduto() {
-    if (produtoSelecionado) {
-      const index = produtos.indexOf(produtoSelecionado);
-      if (index > -1) {
-        produtos.splice(index, 1);
-        produtosFiltrados = [...produtos];
-        produtoSelecionado = null;
-        renderizarTabela();
-        alert('Produto excluído com sucesso!');
-      }
+    if (produtosSelecionados.length > 0) {
+      produtosSelecionados.forEach(produto => {
+        const alteracao = {
+          usuario: 'Usuário Atual', // Substitua pelo nome do usuário atual
+          alteracao: `Excluiu produto ${produto.descricao}`,
+          data: new Date().toLocaleDateString(),
+          hora: new Date().toLocaleTimeString()
+        };
+        historicoAlteracoes.push(alteracao);
+        const index = produtos.indexOf(produto);
+        if (index > -1) {
+          produtos.splice(index, 1);
+        }
+      });
+      produtosFiltrados = [...produtos];
+      produtosSelecionados = [];
+      renderizarTabela();
+      alert('Produtos excluídos com sucesso!');
     } else {
       alert('Selecione um produto para excluir.');
     }
   }
 
   function abrirModalExcluir() {
-    if (produtoSelecionado) {
+    if (produtosSelecionados.length > 0) {
       document.getElementById('modalExcluir').style.display = 'block';
     } else {
       alert('Selecione um produto para excluir.');
@@ -585,6 +799,30 @@
       }
     });
   });
+
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+  }
+
+  function abrirModalHistorico() {
+    const tabelaHistorico = document.getElementById('tabela-historico');
+    tabelaHistorico.innerHTML = '';
+    historicoAlteracoes.forEach(alteracao => {
+      const linha = document.createElement('tr');
+      linha.innerHTML = `
+        <td>${alteracao.usuario}</td>
+        <td>${alteracao.alteracao}</td>
+        <td>${alteracao.data}</td>
+        <td>${alteracao.hora}</td>
+      `;
+      tabelaHistorico.appendChild(linha);
+    });
+    document.getElementById('modalHistorico').style.display = 'block';
+  }
+
+  function fecharModalHistorico() {
+    document.getElementById('modalHistorico').style.display = 'none';
+  }
 </script>
 
 </body>
