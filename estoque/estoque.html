@@ -82,6 +82,7 @@
   <button onclick="limparBusca()">Limpar Filtros</button>
   <button onclick="exportarExcel()">Exportar para Excel</button>
   <button onclick="importarExcel()">Importar Excel</button>
+  <button onclick="alterarProduto()">Alterar</button>
 </div>
 
 <div class="filters">
@@ -140,7 +141,6 @@
 <div class="details">
   <label>Disponível: <input type="number" id="inputDisponivel" value="0"></label>
   <button onclick="aplicarAlteracao()">Aplicar Alterações</button>
-  <button onclick="alterarProduto()">Alterar</button>
 </div>
 
 <div id="modalDetalhes" class="modal">
@@ -153,6 +153,7 @@
     <label>Grupo: <input type="text" id="inputGrupo"></label>
     <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
     <label>Categoria: <input type="text" id="inputCategoria"></label>
+    <label>Unidade: <input type="text" id="inputUnidade"></label>
     <button onclick="salvarAlteracoes()">Salvar Alterações</button>
   </div>
 </div>
@@ -274,8 +275,6 @@
   function selecionarProduto(produto) {
     produtoSelecionado = produto;
     document.getElementById('inputDisponivel').value = produto.disponivel;
-    document.getElementById('modalDetalhes').style.display = 'block';
-
     document.querySelectorAll('.table-container tr').forEach(linha => linha.classList.remove('selected'));
     const linhaSelecionada = Array.from(document.querySelectorAll('.table-container tr')).find(linha => linha.cells[0].textContent == produto.codBarra);
     if (linhaSelecionada) linhaSelecionada.classList.add('selected');
@@ -394,7 +393,10 @@
       document.getElementById('inputGrupo').value = produtoSelecionado.grupo;
       document.getElementById('inputSubgrupo').value = produtoSelecionado.subgrupo;
       document.getElementById('inputCategoria').value = produtoSelecionado.categoria;
+      document.getElementById('inputUnidade').value = produtoSelecionado.un;
       document.getElementById('modalDetalhes').style.display = 'block';
+    } else {
+      alert('Selecione um produto para alterar.');
     }
   }
 
@@ -405,6 +407,7 @@
       produtoSelecionado.grupo = document.getElementById('inputGrupo').value;
       produtoSelecionado.subgrupo = document.getElementById('inputSubgrupo').value;
       produtoSelecionado.categoria = document.getElementById('inputCategoria').value;
+      produtoSelecionado.un = document.getElementById('inputUnidade').value;
       fecharModal();
       renderizarTabela();
       alert('Alterações salvas com sucesso!');
