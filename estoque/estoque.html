@@ -264,8 +264,8 @@
       <label>Cod Fabricante: <input type="text" id="inputCodFabric"></label>
       <label>Cod Auxiliar: <input type="text" id="inputCodAuxiliar"></label>
       <label>Descrição: <input type="text" id="inputDescricao"></label>
-      <label>Unidade: <input type="text" id="inputUnidade"></label>
-      <label>Disponível: <input type="text" id="inputDisponivel"></label>
+      <label>Unidade: <input type="text" id="inputUnidadeAdicionar"></label>
+      <label>Disponível: <input type="text" id="inputDisponivelAdicionar"></label>
       <label>Preço: <input type="text" id="inputPreco"></label>
       <label>Grupo: <input type="text" id="inputGrupoAdicionar"></label>
       <label>Subgrupo: <input type="text" id="inputSubgrupoAdicionar"></label>
@@ -529,12 +529,18 @@
     const codFabric = document.getElementById('inputCodFabric').value;
     const codAuxiliar = document.getElementById('inputCodAuxiliar').value;
     const descricao = document.getElementById('inputDescricao').value;
-    const un = document.getElementById('inputUnidade').value;
-    const disponivel = parseInt(document.getElementById('inputDisponivel').value, 10);
+    const un = document.getElementById('inputUnidadeAdicionar').value;
+    const disponivel = parseInt(document.getElementById('inputDisponivelAdicionar').value, 10);
     const preco = document.getElementById('inputPreco').value;
     const grupo = document.getElementById('inputGrupoAdicionar').value;
     const subgrupo = document.getElementById('inputSubgrupoAdicionar').value;
     const categoria = document.getElementById('inputCategoriaAdicionar').value;
+
+    const produtoExistente = produtos.find(produto => produto.codBarra === codBarra && produto.codFabric === codFabric);
+    if (produtoExistente) {
+      alert('Produto com o mesmo código de barras e código de fabricante já existe.');
+      return;
+    }
 
     const novoProduto = { codBarra, codFabric, codAuxiliar, descricao, un, disponivel, preco, grupo, subgrupo, categoria };
     produtos.push(novoProduto);
