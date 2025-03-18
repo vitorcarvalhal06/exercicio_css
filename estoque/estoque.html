@@ -83,6 +83,7 @@
   <button onclick="exportarExcel()">Exportar para Excel</button>
   <button onclick="importarExcel()">Importar Excel</button>
   <button onclick="alterarProduto()">Alterar</button>
+  <button onclick="abrirModalAdicionar()">Adicionar Produto</button>
 </div>
 
 <div class="filters">
@@ -158,49 +159,26 @@
   </div>
 </div>
 
-<script>
-  const produtos = [
-    { codBarra: 1875, codFabric: 'MS28775-002', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 20, preco: '20 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-7', categoria: 'AERONAUTICA' },
-    { codBarra: 1876, codFabric: 'MS28775-004', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 7, preco: '7 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-8', categoria: 'AERONAUTICA' },
-    { codBarra: 9997, codFabric: 'MS28775-005', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 10, preco: '10 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-9', categoria: 'AERONAUTICA' },
-    { codBarra: 5261, codFabric: 'MS28775-006', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 100, preco: '100 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-10', categoria: 'AERONAUTICA' },
-    { codBarra: 5262, codFabric: 'MS28775-007', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-11', categoria: 'AERONAUTICA' },
-    { codBarra: 5240, codFabric: 'MS28775-008', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 77, preco: '77 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-12', categoria: 'AERONAUTICA' },
-    { codBarra: 5263, codFabric: 'MS28775-009', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 9, preco: '9 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-13', categoria: 'AERONAUTICA' },
-    { codBarra: 3166, codFabric: 'MS28775-010', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-14', categoria: 'AERONAUTICA' },
-    { codBarra: 3167, codFabric: 'MS28775-011', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 66, preco: '66 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-15', categoria: 'AERONAUTICA' },
-    { codBarra: 3168, codFabric: 'MS28775-012', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-16', categoria: 'AERONAUTICA' },
-    { codBarra: 83, codFabric: 'MS28775-013', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 41, preco: '41 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-17', categoria: 'AERONAUTICA' },
-    { codBarra: 84, codFabric: 'MS28775-014', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 6, preco: '6 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '1-18', categoria: 'AERONAUTICA' },
-    { codBarra: 4474, codFabric: 'MS28775-015', descricao: 'ANEL DE VEDACAO BICO INJ./ DRENO', un: 'UN', disponivel: 6, preco: '6 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '2-1', categoria: 'AERONAUTICA' },
-    { codBarra: 85, codFabric: 'MS28775-016', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 7, preco: '7 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '2-2', categoria: 'AERONAUTICA' },
-    { codBarra: 86, codFabric: 'MS28775-017', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 23, preco: '23 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '2-3', categoria: 'AERONAUTICA' },
-    { codBarra: 87, codFabric: 'MS28775-018', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 25, preco: '25 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '2-4', categoria: 'AERONAUTICA' },
-    { codBarra: 88, codFabric: 'MS28775-019', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 17, preco: '17 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '2-5', categoria: 'AERONAUTICA' },
-    { codBarra: 89, codFabric: 'MS28775-020', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '2-6', categoria: 'AERONAUTICA' },
-    { codBarra: 90, codFabric: 'MS28775-021', descricao: 'ANEL DE VEDACAO', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'ANEL DE VEDACAO', subgrupo: '2-7', categoria: 'AERONAUTICA' },
-    { codBarra: 10411, codFabric: '05K22035', descricao: 'KIT ANEL ACO MOTOR', un: 'UN', disponivel: 1, preco: '1 US$', grupo: 'LYCOMING', subgrupo: '20', categoria: 'AERONAUTICA' },
-    { codBarra: 10414, codFabric: '05K22943', descricao: 'JOGO DE JUNTAS REVISÃO MOTOR', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'CONTINENTAL C', subgrupo: '00', categoria: 'AERONAUTICA' },
-    { codBarra: 9995, codFabric: '080930ZA', descricao: 'MOTOR BRIGGS 13,5 HP 21B807 0297 B1', un: 'UN', disponivel: 0, preco: '0 R$', grupo: 'OMA - CONSUMO', subgrupo: 'NACIONAL', categoria: 'NACIONAL' },
-    { codBarra: 9652, codFabric: '100WPLUSQT', descricao: 'LUBRIFICANTE APLICACAO MOTOR W100PLUS', un: 'L', disponivel: 1, preco: '1 US$', grupo: 'INFLAMÁVEL', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 10819, codFabric: '101-00930', descricao: 'BANCADA DE TESTE DE TEMPERATURA DE MOTOR', un: 'UN', disponivel: 0, preco: '0 R$', grupo: 'CONSUMO INTERNO', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 4515, codFabric: '102-389010-47', descricao: 'MANETE DE COMANDO DO MOTOR DO BARON', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'BEECH ESTRUTURA', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 9235, codFabric: '102-389010-49', descricao: 'MANETE DE COMANDO DO MOTOR DO BARON', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'BEECH ESTRUTURA', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 7775, codFabric: '10587', descricao: 'KIT ENROLADOR', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'OMA - CONSUMO', subgrupo: 'NACIONAL', categoria: 'AERONAUTICA' },
-    { codBarra: 9771, codFabric: '1128801-1SL', descricao: 'BLOCO DE MOTOR', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'LYCOMING', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 8037, codFabric: '122-NL', descricao: 'MOTOR DE PARTIDA', un: 'UN', disponivel: 1, preco: '1 US$', grupo: 'COMPONENTES', subgrupo: '01', categoria: 'AERONAUTICA' },
-    { codBarra: 10115, codFabric: '124F001-4CR0172', descricao: 'MANGUEIRA DE MOTOR', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'BORRACHAS', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 10116, codFabric: '124F001-4CR0242', descricao: 'MANGUEIRA DE MOTOR', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'BORRACHAS', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 10117, codFabric: '124F002-6CR0280', descricao: 'MANGUEIRA DE MOTOR', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'BORRACHAS', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 10118, codFabric: '124F003-4CR0110', descricao: 'MANGUEIRA DE MOTOR', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'MANGUEIRAS', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 7261, codFabric: '13918', descricao: 'MOTOR 14 V', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'OMA - CONSUMO', subgrupo: 'CONSUMO INTERNO', categoria: 'AERONAUTICA' },
-    { codBarra: 6639, codFabric: '140327-01', descricao: 'DOCUMENTAÇÃO STC MOTOR', un: 'UN', disponivel: 2, preco: '2 US$', grupo: 'CONSUMO INTERNO', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 3965, codFabric: '149-12LS', descricao: 'MOTOR DE PARTIDA SKYTE', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'CELULA', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 11449, codFabric: '149-24LPA', descricao: 'MOTOR DE PARTIDA', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'COMPONENTES', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 9966, codFabric: '149-NL/EC', descricao: 'MOTOR DE PARTIDA STARTER', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'COMPONENTES', subgrupo: '-', categoria: 'AERONAUTICA' },
-    { codBarra: 10108, codFabric: '150615-02', descricao: 'KIT DE DEFLETORAS MOTOR BARON', un: 'UN', disponivel: 0, preco: '0 US$', grupo: 'BEECH ESTRUTURA', subgrupo: '-', categoria: 'AERONAUTICA' }
-  ];
+<div id="modalAdicionar" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="fecharModalAdicionar()">&times;</span>
+    <h2>Adicionar Produto</h2>
+    <label>Cod Barra: <input type="number" id="inputCodBarra"></label>
+    <label>Cod Fabricante: <input type="text" id="inputCodFabric"></label>
+    <label>Cod Auxiliar: <input type="text" id="inputCodAuxiliar"></label>
+    <label>Descrição: <input type="text" id="inputDescricao"></label>
+    <label>Unidade: <input type="text" id="inputUnidade"></label>
+    <label>Disponível: <input type="number" id="inputDisponivel"></label>
+    <label>Preço: <input type="text" id="inputPreco"></label>
+    <label>Grupo: <input type="text" id="inputGrupo"></label>
+    <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
+    <label>Categoria: <input type="text" id="inputCategoria"></label>
+    <button onclick="adicionarProduto()">Adicionar</button>
+  </div>
+</div>
 
+<script>
+  const produtos = [];
   let produtoSelecionado = null;
   let produtosFiltrados = [...produtos];
   let pagina = 1;
@@ -242,7 +220,7 @@
       linha.innerHTML = `
         <td>${produto.codBarra}</td>
         <td>${produto.codFabric}</td>
-        <td></td>
+        <td>${produto.codAuxiliar}</td>
         <td>${produto.descricao}</td>
         <td>${produto.un}</td>
         <td>${produto.disponivel}</td>
@@ -412,6 +390,34 @@
       renderizarTabela();
       alert('Alterações salvas com sucesso!');
     }
+  }
+
+  function abrirModalAdicionar() {
+    document.getElementById('modalAdicionar').style.display = 'block';
+  }
+
+  function fecharModalAdicionar() {
+    document.getElementById('modalAdicionar').style.display = 'none';
+  }
+
+  function adicionarProduto() {
+    const codBarra = parseInt(document.getElementById('inputCodBarra').value, 10);
+    const codFabric = document.getElementById('inputCodFabric').value;
+    const codAuxiliar = document.getElementById('inputCodAuxiliar').value;
+    const descricao = document.getElementById('inputDescricao').value;
+    const un = document.getElementById('inputUnidade').value;
+    const disponivel = parseInt(document.getElementById('inputDisponivel').value, 10);
+    const preco = document.getElementById('inputPreco').value;
+    const grupo = document.getElementById('inputGrupo').value;
+    const subgrupo = document.getElementById('inputSubgrupo').value;
+    const categoria = document.getElementById('inputCategoria').value;
+
+    const novoProduto = { codBarra, codFabric, codAuxiliar, descricao, un, disponivel, preco, grupo, subgrupo, categoria };
+    produtos.push(novoProduto);
+    produtosFiltrados = [...produtos];
+    fecharModalAdicionar();
+    renderizarTabela();
+    alert('Produto adicionado com sucesso!');
   }
 </script>
 
