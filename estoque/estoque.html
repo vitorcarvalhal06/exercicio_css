@@ -22,6 +22,21 @@
       margin-right: 5px;
       padding: 5px 10px;
     }
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 10px;
+      align-items: center;
+    }
+    .filters label {
+      display: flex;
+      flex-direction: column;
+    }
+    .filters button {
+      grid-column: span 2;
+      align-self: center;
+      justify-self: center;
+    }
     .filters select, .filters input, .details input {
       margin: 5px;
     }
@@ -74,6 +89,20 @@
       text-decoration: none;
       cursor: pointer;
     }
+    .modal-content form {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .modal-content form label {
+      display: flex;
+      flex-direction: column;
+    }
+    .modal-content form button {
+      grid-column: span 2;
+      align-self: center;
+      justify-self: center;
+    }
   </style>
 </head>
 <body>
@@ -84,6 +113,7 @@
   <button onclick="importarExcel()">Importar Excel</button>
   <button onclick="alterarProduto()">Alterar</button>
   <button onclick="abrirModalAdicionar()">Adicionar Produto</button>
+  <button onclick="excluirProduto()">Excluir Produto</button>
 </div>
 
 <div class="filters">
@@ -148,14 +178,15 @@
   <div class="modal-content">
     <span class="close" onclick="fecharModal()">&times;</span>
     <h2>Detalhes do Produto</h2>
-    <p id="detalhesProduto"></p>
-    <label>Nome: <input type="text" id="inputNome"></label>
-    <label>Quantidade: <input type="number" id="inputQuantidade"></label>
-    <label>Grupo: <input type="text" id="inputGrupo"></label>
-    <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
-    <label>Categoria: <input type="text" id="inputCategoria"></label>
-    <label>Unidade: <input type="text" id="inputUnidade"></label>
-    <button onclick="salvarAlteracoes()">Salvar Alterações</button>
+    <form>
+      <label>Nome: <input type="text" id="inputNome"></label>
+      <label>Quantidade: <input type="number" id="inputQuantidade"></label>
+      <label>Grupo: <input type="text" id="inputGrupo"></label>
+      <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
+      <label>Categoria: <input type="text" id="inputCategoria"></label>
+      <label>Unidade: <input type="text" id="inputUnidade"></label>
+      <button type="button" onclick="salvarAlteracoes()">Salvar Alterações</button>
+    </form>
   </div>
 </div>
 
@@ -163,17 +194,19 @@
   <div class="modal-content">
     <span class="close" onclick="fecharModalAdicionar()">&times;</span>
     <h2>Adicionar Produto</h2>
-    <label>Cod Barra: <input type="number" id="inputCodBarra"></label>
-    <label>Cod Fabricante: <input type="text" id="inputCodFabric"></label>
-    <label>Cod Auxiliar: <input type="text" id="inputCodAuxiliar"></label>
-    <label>Descrição: <input type="text" id="inputDescricao"></label>
-    <label>Unidade: <input type="text" id="inputUnidade"></label>
-    <label>Disponível: <input type="number" id="inputDisponivel"></label>
-    <label>Preço: <input type="text" id="inputPreco"></label>
-    <label>Grupo: <input type="text" id="inputGrupo"></label>
-    <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
-    <label>Categoria: <input type="text" id="inputCategoria"></label>
-    <button onclick="adicionarProduto()">Adicionar</button>
+    <form>
+      <label>Cod Barra: <input type="number" id="inputCodBarra"></label>
+      <label>Cod Fabricante: <input type="text" id="inputCodFabric"></label>
+      <label>Cod Auxiliar: <input type="text" id="inputCodAuxiliar"></label>
+      <label>Descrição: <input type="text" id="inputDescricao"></label>
+      <label>Unidade: <input type="text" id="inputUnidade"></label>
+      <label>Disponível: <input type="number" id="inputDisponivel"></label>
+      <label>Preço: <input type="text" id="inputPreco"></label>
+      <label>Grupo: <input type="text" id="inputGrupo"></label>
+      <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
+      <label>Categoria: <input type="text" id="inputCategoria"></label>
+      <button type="button" onclick="adicionarProduto()">Adicionar</button>
+    </form>
   </div>
 </div>
 
@@ -283,8 +316,13 @@
   function exportarExcel() {
     const tabela = document.getElementById('tabela-produtos');
     const linhas = Array.from(tabela.querySelectorAll('tr'));
-    let csvContent = "data:text/csv;charset=utf-8,";
 
+    if (linhas.length === 0) {
+      alert('Nenhum produto disponível para exportar.');
+      return;
+    }
+
+    let csvContent = "data:text/csv;charset=utf-8,";
     linhas.forEach(linha => {
       const colunas = Array.from(linha.querySelectorAll('td, th')).map(coluna => coluna.textContent);
       csvContent += colunas.join(",") + "\r\n";
@@ -303,9 +341,11 @@
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.csv, .xls, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel';
+    
     input.onchange = e => {
       const file = e.target.files[0];
       const reader = new FileReader();
+      
       reader.onload = event => {
         const data = event.target.result;
         const linhas = data.split('\n').map(linha => linha.split(','));
@@ -337,8 +377,10 @@
         });
         tabela.appendChild(tbody);
       };
+      
       reader.readAsText(file);
     };
+    
     input.click();
   }
 
@@ -419,6 +461,30 @@
     renderizarTabela();
     alert('Produto adicionado com sucesso!');
   }
+
+  function excluirProduto() {
+    if (produtoSelecionado) {
+      const index = produtos.indexOf(produtoSelecionado);
+      if (index > -1) {
+        produtos.splice(index, 1);
+        produtosFiltrados = [...produtos];
+        produtoSelecionado = null;
+        renderizarTabela();
+        alert('Produto excluído com sucesso!');
+      }
+    } else {
+      alert('Selecione um produto para excluir.');
+    }
+  }
+
+  document.querySelectorAll('.filters input').forEach(input => {
+    input.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        pesquisar();
+      }
+    });
+  });
 </script>
 
 </body>
