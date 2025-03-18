@@ -41,14 +41,35 @@
     .filters label {
       display: flex;
       flex-direction: column;
+      font-weight: bold;
+      color: #333;
+    }
+    .filters select, .filters input, .details input {
+      margin: 5px;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .filters select:focus, .filters input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     }
     .filters button {
       grid-column: span 2;
       align-self: center;
       justify-self: center;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.3s;
     }
-    .filters select, .filters input, .details input {
-      margin: 5px;
+    .filters button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
     }
     table {
       width: 100%;
@@ -107,11 +128,31 @@
     .modal-content form label {
       display: flex;
       flex-direction: column;
+      font-weight: bold;
+      color: #333;
+    }
+    .modal-content form input {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .modal-content form input:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
     }
     .modal-content form button {
-      grid-column: span 2;
-      align-self: center;
-      justify-self: center;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      border-radius: 5px;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .modal-content form button:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
     }
   </style>
 </head>
@@ -123,7 +164,7 @@
   <button onclick="importarExcel()">Importar Excel</button>
   <button onclick="alterarProduto()">Alterar</button>
   <button onclick="abrirModalAdicionar()">Adicionar Produto</button>
-  <button onclick="excluirProduto()">Excluir Produto</button>
+  <button onclick="abrirModalExcluir()">Excluir Produto</button>
 </div>
 
 <div class="filters">
@@ -147,8 +188,8 @@
     <input type="number" id="inputDisponivelMin" placeholder="Min">
     <input type="number" id="inputDisponivelMax" placeholder="Max">
   </label>
-  <button onclick="pesquisar()">Pesquisar</button>
   <button onclick="limparResultados()">Limpar Resultados</button>
+  <button onclick="pesquisar()">Pesquisar</button>
 </div>
 
 <div class="table-container">
@@ -217,6 +258,16 @@
       <label>Categoria: <input type="text" id="inputCategoria"></label>
       <button type="button" onclick="adicionarProduto()">Adicionar</button>
     </form>
+  </div>
+</div>
+
+<div id="modalExcluir" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="fecharModalExcluir()">&times;</span>
+    <h2>Excluir Produto</h2>
+    <p>Tem certeza que deseja excluir este produto?</p>
+    <button onclick="confirmarExclusao()">Sim</button>
+    <button onclick="fecharModalExcluir()">Não</button>
   </div>
 </div>
 
@@ -411,8 +462,16 @@
   });
 
   function confirmarExclusao() {
-    if (confirm('Tem certeza que deseja excluir este produto?')) {
-      // Lógica de exclusão
+    if (produtoSelecionado) {
+      const index = produtos.indexOf(produtoSelecionado);
+      if (index > -1) {
+        produtos.splice(index, 1);
+        produtosFiltrados = [...produtos];
+        produtoSelecionado = null;
+        renderizarTabela();
+        alert('Produto excluído com sucesso!');
+      }
+      fecharModalExcluir();
     }
   }
 
@@ -485,6 +544,18 @@
     } else {
       alert('Selecione um produto para excluir.');
     }
+  }
+
+  function abrirModalExcluir() {
+    if (produtoSelecionado) {
+      document.getElementById('modalExcluir').style.display = 'block';
+    } else {
+      alert('Selecione um produto para excluir.');
+    }
+  }
+
+  function fecharModalExcluir() {
+    document.getElementById('modalExcluir').style.display = 'none';
   }
 
   document.querySelectorAll('.filters input').forEach(input => {
