@@ -87,7 +87,13 @@
     .pagination {
       display: flex;
       justify-content: center;
-      margin: 10px 0;
+      align-items: center;
+      margin: 20px 0;
+      gap: 10px;
+    }
+    .pagination span {
+      font-size: 18px;
+      font-weight: bold;
     }
     .modal {
       display: none;
@@ -314,7 +320,10 @@
     <select><option>&lt;Todos&gt;</option></select>
   </label>
   <label>Situação:
-    <select><option>Ativos</option></select>
+    <select>
+      <option>Ativos</option>
+      <option>Inativos</option>
+    </select>
   </label>
   <label>Cód. Fabricante / Descrição:
     <input type="text" id="inputBusca" placeholder="Digite o código ou descrição">
@@ -355,7 +364,7 @@
 
 <div class="pagination">
   <button onclick="paginaAnterior()">Anterior</button>
-  <span id="paginaAtual">1</span>
+  <span id="paginaAtual">1</span> de <span id="totalPaginas">1</span>
   <button onclick="proximaPagina()">Próxima</button>
 </div>
 
@@ -374,7 +383,25 @@
       <label>Grupo: <input type="text" id="inputGrupo"></label>
       <label>Subgrupo: <input type="text" id="inputSubgrupo"></label>
       <label>Categoria: <input type="text" id="inputCategoria"></label>
-      <label>Unidade: <input type="text" id="inputUnidade"></label>
+      <label>Unidade:
+        <select id="inputUnidade">
+          <option value="UN">UN</option>
+          <option value="KG">KG</option>
+          <option value="GR">GR</option>
+          <option value="FT">FT</option>
+          <option value="CM">CM</option>
+          <option value="M">M</option>
+          <option value="LT">LT</option>
+          <option value="M2">M2</option>
+        </select>
+      </label>
+      <label>Preço:
+        <select id="inputPrecoDetalhes">
+          <option value="R$">R$</option>
+          <option value="US$">US$</option>
+          <option value="€">€</option>
+        </select>
+      </label>
       <button type="button" onclick="salvarAlteracoes()">Salvar Alterações</button>
     </form>
   </div>
@@ -402,7 +429,13 @@
         </select>
       </label>
       <label>Disponível: <input type="text" id="inputDisponivelAdicionar"></label>
-      <label>Preço: <input type="text" id="inputPreco"></label>
+      <label>Preço:
+        <select id="inputPreco">
+          <option value="R$">R$</option>
+          <option value="US$">US$</option>
+          <option value="€">€</option>
+        </select>
+      </label>
       <label>Grupo: <input type="text" id="inputGrupoAdicionar"></label>
       <label>Subgrupo: <input type="text" id="inputSubgrupoAdicionar"></label>
       <label>Categoria: <input type="text" id="inputCategoriaAdicionar"></label>
@@ -511,6 +544,7 @@
     });
 
     document.getElementById('paginaAtual').textContent = pagina;
+    document.getElementById('totalPaginas').textContent = Math.ceil(produtosFiltrados.length / itensPorPagina);
   }
 
   function selecionarProduto(produto, linha, event) {
